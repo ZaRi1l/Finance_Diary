@@ -27,3 +27,6 @@ Excel 파일로 내보낼 수 있다.<br/>
 
 <br/>
 <br/>
+
+### 프로젝트 후기
+https://stellacode.tistory.com/entry/App-%EB%A7%A4%EB%A7%A4%EC%9D%BC%EC%A7%80-%EC%BD%94%EC%9D%B8-%EC%A3%BC%EC%8B%9D-%EB%B6%84%EC%84%9D
