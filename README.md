@@ -11,7 +11,7 @@
 구매한 종목들을 분석할 수 있다.<br/>
 Excel 파일로 내보낼 수 있다.<br/>
 
-- 다운로드 : https://play.google.com/store/apps/details?id=com.trade.trading_diary&hl=ko-KR (현재 내려감)
+- 다운로드 : https://play.google.com/store/apps/details?id=com.trade.trading_diary&hl=ko-KR
 
 
 <br/>
