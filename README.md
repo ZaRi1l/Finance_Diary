@@ -32,10 +32,10 @@ Google Play 다운로드: https://play.google.com/store/apps/details?id=com.trad
 
 - **💾 데이터 백업 및 공유 (Excel)**:
   - **`excel`**, **`path_provider`** 라이브러리를 통해 모든 매매 기록을 Excel(.xlsx) 파일로 내보내기.
-  - **`permission_handler`**를 사용하여 저장소 접근 권한을 안전하게 관리.
+  - **`permission_handler`** 를 사용하여 저장소 접근 권한을 안전하게 관리.
 
 - **💰 광고 수익화**:
-  - **`google_mobile_ads`**를 적용하여 배너 광고를 통한 앱 수익화 모델 구현.
+  - **`google_mobile_ads`** 를 적용하여 배너 광고를 통한 앱 수익화 모델 구현.
 
 <br>
 
