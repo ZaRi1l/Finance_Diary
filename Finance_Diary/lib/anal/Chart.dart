@@ -8,6 +8,7 @@ import '../data/diaryListData.dart';
 
 ListAddData lad = ListAddData();
 
+// 이 함수 전체를 덮어쓰세요.
 Widget bottomTitleWidgets(double value, TitleMeta meta) {
   const style = TextStyle(
     fontWeight: FontWeight.bold,
@@ -15,23 +16,31 @@ Widget bottomTitleWidgets(double value, TitleMeta meta) {
   );
   Widget text;
 
-
-
   text = Text(value.toInt().toString(), style: style);
+
+  // axisSide 파라미터를 완전히 제거합니다.
   return SideTitleWidget(
-    axisSide: meta.axisSide,
+    space: 8.0,
+    meta: meta,
     child: text,
   );
 }
 
+// 이 함수 전체를 덮어쓰세요.
 Widget leftTitleWidgets(double value, TitleMeta meta) {
   const style = TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: 15,
   );
-  String text;
+  String textValue = value.toInt().toString();
+  final text = Text(textValue, style: style, textAlign: TextAlign.left);
 
-  return Text(value.toInt().toString(), style: style, textAlign: TextAlign.left);
+  // 여기도 마찬가지로 meta 객체를 통째로 전달합니다.
+  return SideTitleWidget(
+    meta: meta, // <-- IDE가 요구한 바로 그 파라미터입니다!
+    space: 8.0,
+    child: text,
+  );
 }
 
 LineChartData ChartData(int index, tum) {
@@ -137,7 +146,9 @@ LineChartData ChartData(int index, tum) {
     ],
     lineTouchData: LineTouchData(
       touchTooltipData: LineTouchTooltipData(
-        tooltipBgColor: Colors.white,
+        getTooltipColor:(LineBarSpot touchedSpot) {
+          return Colors.white;
+        }
       ),
 
     )

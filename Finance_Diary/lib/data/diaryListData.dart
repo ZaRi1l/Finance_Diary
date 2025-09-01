@@ -591,7 +591,9 @@ class ListAddData {
     excel.delete("Sheet1");
 
     for(var i = 0; i < csvList.length; i++) {
-      sheetObject.appendRow(csvList[i]);
+      // 각 항목을 문자열로 변환한 후, TextCellValue 객체로 만듭니다.
+      List<CellValue> rowData = csvList[i].map((cell) => TextCellValue(cell.toString())).toList();
+      sheetObject.appendRow(rowData);
     }
     print(sheetObject);
     FileStorage.writeCounter(excel.save(), fname);

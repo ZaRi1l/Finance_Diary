@@ -153,6 +153,8 @@ class _MainPageState extends State<MainPage>
                 case 2:
                   col = [Colors.black, Colors.black, Colors.green[300]];
                   break;
+                default:
+                  break;
               }
             });
           },
@@ -207,6 +209,8 @@ class _MainPageState extends State<MainPage>
       // 앱이 이 상태에 있으면 엔진이 "View"없이 실행됩니다.
       // 엔진이 처음 초기화 될 때 "View" 연결 진행 중이거나 네비게이터 팝으로 인해 "View"가 파괴 된 후 일 수 있습니다.
         print("detached");
+        break;
+      default:
         break;
     }
   }

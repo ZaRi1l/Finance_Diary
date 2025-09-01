@@ -22,8 +22,7 @@ loadAppOpenAd() {
         onAdFailedToLoad: (error) {
           print("error 남");
           print(error);
-        },),
-      orientation: AppOpenAd.orientationPortrait);
+        },),);
 }
 
 

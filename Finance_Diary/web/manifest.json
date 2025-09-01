@@ -1,6 +1,6 @@
 {
-    "name": "finance_diary",
-    "short_name": "finance_diary",
+    "name": "finance_diary_new",
+    "short_name": "finance_diary_new",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
