@@ -10,9 +10,17 @@
 
 <br>
 
-Google Play 다운로드: https://play.google.com/store/apps/details?id=com.trade.trading_diary&hl=ko-KR
+**Google Play 다운로드: [바로가기 (500+ Downloads)](https://play.google.com/store/apps/details?id=com.trade.trading_diary&hl=ko-KR)**
 
 <br>
+
+---
+
+## 📊 주요 성과 (Key Achievements)
+
+- ✅ **Google Play Store 정식 출시 및 500회 이상 다운로드 달성**
+- ✅ **Google AdMob 연동 및 약 2년간 57달러 이상 지속적인 광고 수익 창출**
+- ✅ **1인 기획, 개발, 출시, 수익화까지 Full-Cycle 앱 개발 프로세스 완수**
 
 ---
 
@@ -60,7 +68,7 @@ Google Play 다운로드: https://play.google.com/store/apps/details?id=com.trad
 
 ## ✨ 1인 개발을 통해 얻은 역량
 
-이 프로젝트는 **Flutter 프레임워크를 독학**하며 진행한 첫 번째 앱 개발 프로젝트입니다. 혼자 아이디어를 구체화하고, 필요한 기술을 학습하며 실제 사용 가능한 앱을 만들기까지의 전 과정을 경험하며 다음과 같은 역량을 길렀습니다.
+이 프로젝트는 Flutter 프레임워크를 독학하며 진행한 첫 번째 앱 개발 프로젝트입니다. 혼자 아이디어를 구체화하고, 필요한 기술을 학습하며 실제 사용 가능한 앱을 만들었습니다. 이는 실제 시장에서 500명 이상의 사용자가 다운로드하고 2년간 스스로 수익을 내는 결과물로 이어졌습니다. 이 경험을 통해 다음과 같은 역량을 길렀습니다.
 
 - **Full-Cycle 앱 개발 경험**: 기획, UI/UX 설계, 개발, 테스트, 그리고 **Google Play Store 배포 및 광고 수익화**까지 앱 생명주기 전체를 독립적으로 관리하고 완성했습니다.
 - **독립적인 문제 해결 능력**: 기능 구현 중 발생하는 수많은 에러와 기술적 난관들을 공식 문서, 커뮤니티 등을 통해 스스로 해결하는 능력을 길렀습니다.
