@@ -1,0 +1,613 @@
+<html>
+<head>
+<title>diaryListData.dart</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #a9b7c6;}
+.s1 { color: #6a8759;}
+.s2 { color: #cc7832;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+diaryListData.dart</font>
+</center></td></tr></table>
+<pre>
+<span class="s0">import </span><span class="s1">'dart:convert'</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">'package:finance_diary/system/diarySystem.dart'</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">'package:csv/csv.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:path_provider/path_provider.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'dart:async'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'dart:io'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:permission_handler/permission_handler.dart'</span><span class="s2">;</span>
+
+<span class="s2">class </span><span class="s0">ListAddData {</span>
+  <span class="s0">static late List&lt;List&lt;dynamic&gt;&gt; diaryList</span><span class="s2">;</span>
+  <span class="s0">static late List&lt;List&lt;dynamic&gt;&gt; diaryFilterList=[]</span><span class="s2">;</span>
+  <span class="s0">static late List&lt;List&lt;dynamic&gt;&gt; diaryFilterList2=[]</span><span class="s2">;</span>
+  <span class="s0">static List filterList = []</span><span class="s2">;</span>
+  <span class="s0">static List filterList2 = []</span><span class="s2">;</span>
+  <span class="s0">static List analData = [</span><span class="s1">''</span><span class="s2">, </span><span class="s1">''</span><span class="s2">, </span><span class="s1">'1000'</span><span class="s2">, </span><span class="s1">''</span><span class="s2">, </span><span class="s1">''</span><span class="s0">]</span><span class="s2">;</span>
+  <span class="s0">static List analData2 = []</span><span class="s2">;</span>
+  <span class="s0">static List allProfit = []</span><span class="s2">;</span>
+
+
+  <span class="s0">Future&lt;String&gt; dataLoad() async {</span>
+
+    <span class="s2">try </span><span class="s0">{</span>
+      <span class="s2">final </span><span class="s0">file = await _localFile</span><span class="s2">;</span>
+
+      <span class="s3">// Read the file</span>
+      <span class="s2">final </span><span class="s0">input = file.openRead()</span><span class="s2">;</span>
+      <span class="s2">final </span><span class="s0">contents = await input.transform(utf8.decoder).transform(CsvToListConverter()).toList()</span><span class="s2">;</span>
+      <span class="s0">diaryList = contents</span><span class="s2">;</span>
+      <span class="s0">print(</span><span class="s1">&quot;dataLoad &quot;</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">} </span><span class="s2">catch </span><span class="s0">(e) {</span>
+      <span class="s0">print(</span><span class="s1">&quot;dataLoad 오류 발생&quot;</span><span class="s0">)</span><span class="s2">;</span>
+
+      <span class="s2">final </span><span class="s0">file = await _localFile</span><span class="s2">;</span>
+      <span class="s0">file.create()</span><span class="s2">;</span>
+
+      <span class="s0">diaryList = []</span><span class="s2">;</span>
+      <span class="s0">print(</span><span class="s1">&quot;dataLoad2&quot;</span><span class="s0">)</span><span class="s2">;</span>
+
+    <span class="s0">}</span>
+
+    <span class="s0">diaryFilterList.clear()</span><span class="s2">;</span>
+    <span class="s0">diaryFilterList.addAll(diaryList)</span><span class="s2">;</span>
+    <span class="s0">diaryFilterList2.clear()</span><span class="s2">;</span>
+    <span class="s0">diaryFilterList2.addAll(diaryList.reversed)</span><span class="s2">;</span>
+    <span class="s0">calAllProfit()</span><span class="s2">;</span>
+
+
+
+    <span class="s2">try </span><span class="s0">{</span>
+      <span class="s2">final </span><span class="s0">file = await _localFile2</span><span class="s2">;</span>
+
+      <span class="s3">// Read the file</span>
+      <span class="s2">final </span><span class="s0">contents = await file.readAsString()</span><span class="s2">;</span>
+      <span class="s0">analData[</span><span class="s4">2</span><span class="s0">] = contents</span><span class="s2">;</span>
+
+    <span class="s0">} </span><span class="s2">catch </span><span class="s0">(e) {</span>
+      <span class="s2">final </span><span class="s0">file = await _localFile2</span><span class="s2">;</span>
+
+      <span class="s0">file.create()</span><span class="s2">;</span>
+
+      <span class="s0">file.writeAsString(</span><span class="s1">'1000'</span><span class="s0">)</span><span class="s2">;</span>
+
+      <span class="s2">final </span><span class="s0">contents = await file.readAsString()</span><span class="s2">;</span>
+
+      <span class="s0">analData[</span><span class="s4">2</span><span class="s0">] = contents</span><span class="s2">;</span>
+    <span class="s0">}</span>
+
+    <span class="s0">analCal()</span><span class="s2">;</span>
+    <span class="s0">analCal2()</span><span class="s2">;</span>
+
+    <span class="s2">return </span><span class="s1">&quot;d&quot;</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">Future&lt;String&gt; get _localPath async {</span>
+    <span class="s2">final </span><span class="s0">directory = await getApplicationDocumentsDirectory()</span><span class="s2">;</span>
+
+    <span class="s2">return </span><span class="s0">directory.path</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">Future&lt;File&gt; get _localFile async {</span>
+    <span class="s2">final </span><span class="s0">path = await _localPath</span><span class="s2">;</span>
+    <span class="s2">return </span><span class="s0">File(</span><span class="s1">&quot;</span><span class="s0">$path</span><span class="s1">/diaryList.csv&quot;</span><span class="s0">)</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">Future&lt;String&gt; get _localPath2 async {</span>
+    <span class="s2">final </span><span class="s0">directory = await getApplicationDocumentsDirectory()</span><span class="s2">;</span>
+
+    <span class="s2">return </span><span class="s0">directory.path</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">Future&lt;File&gt; get _localFile2 async {</span>
+    <span class="s2">final </span><span class="s0">path = await _localPath2</span><span class="s2">;</span>
+    <span class="s2">return </span><span class="s0">File(</span><span class="s1">&quot;</span><span class="s0">$path</span><span class="s1">/anal.txt&quot;</span><span class="s0">)</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">dataAdd(data) async {</span>
+    <span class="s2">try </span><span class="s0">{</span>
+
+      <span class="s2">if </span><span class="s0">(diaryList.length == </span><span class="s4">0</span><span class="s0">) {</span>
+        <span class="s0">diaryList.add(data)</span><span class="s2">;</span>
+      <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+        <span class="s2">var </span><span class="s0">i = daySoltIndex(data)</span><span class="s2">;</span>
+        <span class="s0">diaryList.insert(i</span><span class="s2">, </span><span class="s0">data)</span><span class="s2">;</span>
+      <span class="s0">}</span>
+
+      <span class="s0">print(daySoltIndex(data))</span><span class="s2">;</span>
+
+      <span class="s0">cal()</span><span class="s2">;</span>
+
+      <span class="s0">diaryFilterList.clear()</span><span class="s2">;</span>
+      <span class="s0">diaryFilterList.addAll(diaryList)</span><span class="s2">;</span>
+      <span class="s0">diaryFilterList2.clear()</span><span class="s2">;</span>
+      <span class="s0">diaryFilterList2.addAll(diaryList.reversed)</span><span class="s2">;</span>
+
+      <span class="s0">save(diaryList)</span><span class="s2">;</span>
+
+
+
+    <span class="s0">} </span><span class="s2">catch </span><span class="s0">(e) {</span>
+      <span class="s0">print(</span><span class="s1">&quot;&quot;</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+  <span class="s0">}</span>
+
+  <span class="s0">cal() {   </span><span class="s3">// 수익 수익률 계산</span>
+    <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt; diaryList.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+      <span class="s2">if</span><span class="s0">(diaryList[i].length &lt; </span><span class="s4">6</span><span class="s0">) {</span>
+        <span class="s2">var </span><span class="s0">sum = double.parse(diaryList[i][</span><span class="s4">3</span><span class="s0">]) - double.parse(diaryList[i][</span><span class="s4">2</span><span class="s0">])</span><span class="s2">;</span>
+        <span class="s0">diaryList[i].add(sum)</span><span class="s2">;</span>
+
+        <span class="s0">sum = sum / double.parse(diaryList[i][</span><span class="s4">2</span><span class="s0">]) * </span><span class="s4">100</span><span class="s2">;</span>
+        <span class="s2">var </span><span class="s0">sum2 = sum.toString()</span><span class="s2">;</span>
+        <span class="s2">if </span><span class="s0">(sum2.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+          <span class="s0">sum2 = sum2.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+        <span class="s0">}</span>
+        <span class="s0">diaryList[i].add(sum2)</span><span class="s2">;</span>
+      <span class="s0">}</span>
+    <span class="s0">}</span>
+  <span class="s0">}</span>
+
+  <span class="s0">save(data) async {</span>
+    <span class="s2">try</span><span class="s0">{</span>
+      <span class="s2">final </span><span class="s0">file = await _localFile</span><span class="s2">;</span>
+
+      <span class="s0">diaryList = List.from(data)</span><span class="s2">;</span>
+
+      <span class="s0">String csv = </span><span class="s2">const </span><span class="s0">ListToCsvConverter().convert(diaryList)</span><span class="s2">;</span>
+      <span class="s0">file.writeAsString(csv)</span><span class="s2">;</span>
+
+      <span class="s0">print(diaryList)</span><span class="s2">;</span>
+      <span class="s0">print(</span><span class="s1">&quot;저장&quot;</span><span class="s0">)</span><span class="s2">;</span>
+
+    <span class="s0">} </span><span class="s2">catch </span><span class="s0">(e) {</span>
+      <span class="s0">print(</span><span class="s1">&quot;파일 저장 안됨.&quot;</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+  <span class="s0">}</span>
+
+  <span class="s0">getData() {</span>
+    <span class="s2">return </span><span class="s0">diaryList</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">daySoltIndex(data) {</span>
+    <span class="s2">var </span><span class="s0">dayNum = dayCutting(data[</span><span class="s4">0</span><span class="s0">])</span><span class="s2">;</span>
+
+    <span class="s2">for </span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt; diaryList.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+      <span class="s2">if </span><span class="s0">(i == </span><span class="s4">0</span><span class="s0">){</span>
+        <span class="s2">if </span><span class="s0">(dayNum &gt;= dayCutting(diaryList[i][</span><span class="s4">0</span><span class="s0">])) {</span>
+          <span class="s2">return </span><span class="s4">0</span><span class="s2">;</span>
+        <span class="s0">}</span>
+      <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+        <span class="s2">if </span><span class="s0">(dayCutting(diaryList[i - </span><span class="s4">1</span><span class="s0">][</span><span class="s4">0</span><span class="s0">]) &gt; dayNum &amp;&amp; dayNum &gt;= dayCutting(diaryList[i][</span><span class="s4">0</span><span class="s0">])) {</span>
+          <span class="s2">return </span><span class="s0">i</span><span class="s2">;</span>
+        <span class="s0">}</span>
+      <span class="s0">}</span>
+    <span class="s0">}</span>
+
+    <span class="s2">return </span><span class="s0">diaryList.length</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">dayCutting(day) {</span>
+    <span class="s0">day = day.split(</span><span class="s1">&quot;-&quot;</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">dayNum = int.parse(day[</span><span class="s4">0</span><span class="s0">] + day[</span><span class="s4">1</span><span class="s0">] + day[</span><span class="s4">2</span><span class="s0">])</span><span class="s2">;</span>
+    <span class="s2">return </span><span class="s0">dayNum</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">dayCutting2(day) {</span>
+    <span class="s0">day = day.split(</span><span class="s1">&quot;-&quot;</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">dayNum = double.parse(day[</span><span class="s4">0</span><span class="s0">] + day[</span><span class="s4">1</span><span class="s0">] + day[</span><span class="s4">2</span><span class="s0">])</span><span class="s2">;</span>
+    <span class="s2">return </span><span class="s0">dayNum</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+
+
+  <span class="s3">// --- 필터 부분</span>
+
+
+  <span class="s2">void </span><span class="s0">dataFilter(data) {</span>
+    <span class="s0">filterList = data</span><span class="s2">;</span>
+    <span class="s0">List demo = []</span><span class="s2">;</span>
+
+    <span class="s0">diaryFilterList.clear()</span><span class="s2">;</span>
+
+    <span class="s2">if </span><span class="s0">(filterList[</span><span class="s4">0</span><span class="s0">]) {</span>
+      <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt;  diaryList.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+        <span class="s2">if</span><span class="s0">(dayCutting(filterList[</span><span class="s4">1</span><span class="s0">]) &lt;= dayCutting(diaryList[i][</span><span class="s4">0</span><span class="s0">]) &amp;&amp; dayCutting(diaryList[i][</span><span class="s4">0</span><span class="s0">]) &lt;= dayCutting(filterList[</span><span class="s4">2</span><span class="s0">])) {</span>
+          <span class="s0">demo.add(diaryList[i])</span><span class="s2">;</span>
+        <span class="s0">}</span>
+      <span class="s0">}</span>
+    <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+      <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt;  diaryList.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+        <span class="s0">demo.add(diaryList[i])</span><span class="s2">;</span>
+      <span class="s0">}</span>
+    <span class="s0">}</span>
+
+    <span class="s2">if </span><span class="s0">(filterList[</span><span class="s4">3</span><span class="s0">]) {</span>
+      <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt;  demo.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+        <span class="s2">if</span><span class="s0">(demo[i][</span><span class="s4">1</span><span class="s0">].compareTo(filterList[</span><span class="s4">4</span><span class="s0">]) == </span><span class="s4">0</span><span class="s0">) {</span>
+          <span class="s0">diaryFilterList.add(demo[i])</span><span class="s2">;</span>
+        <span class="s0">}</span>
+      <span class="s0">}</span>
+    <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+      <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt;  diaryList.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+        <span class="s0">diaryFilterList.add(demo[i])</span><span class="s2">;</span>
+      <span class="s0">}</span>
+    <span class="s0">}</span>
+
+  <span class="s0">}</span>
+
+  <span class="s2">void </span><span class="s0">dataFilter2(data) {</span>
+    <span class="s0">filterList2 = data</span><span class="s2">;</span>
+    <span class="s0">List demo = []</span><span class="s2">;</span>
+
+    <span class="s0">diaryFilterList2.clear()</span><span class="s2">;</span>
+
+    <span class="s2">if </span><span class="s0">(filterList2[</span><span class="s4">0</span><span class="s0">]) {</span>
+      <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt;  diaryList.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+        <span class="s2">if</span><span class="s0">(dayCutting(filterList2[</span><span class="s4">1</span><span class="s0">]) &lt;= dayCutting(diaryList[i][</span><span class="s4">0</span><span class="s0">]) &amp;&amp; dayCutting(diaryList[i][</span><span class="s4">0</span><span class="s0">]) &lt;= dayCutting(filterList2[</span><span class="s4">2</span><span class="s0">])) {</span>
+          <span class="s0">demo.add(diaryList[i])</span><span class="s2">;</span>
+        <span class="s0">}</span>
+      <span class="s0">}</span>
+    <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+      <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt;  diaryList.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+        <span class="s0">demo.add(diaryList[i])</span><span class="s2">;</span>
+      <span class="s0">}</span>
+    <span class="s0">}</span>
+
+    <span class="s2">if </span><span class="s0">(filterList2[</span><span class="s4">3</span><span class="s0">]) {</span>
+      <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt;  demo.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+        <span class="s2">if</span><span class="s0">(demo[i][</span><span class="s4">1</span><span class="s0">].compareTo(filterList2[</span><span class="s4">4</span><span class="s0">]) == </span><span class="s4">0</span><span class="s0">) {</span>
+          <span class="s0">diaryFilterList2.add(demo[i])</span><span class="s2">;</span>
+        <span class="s0">}</span>
+      <span class="s0">}</span>
+    <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+      <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt;  diaryList.length</span><span class="s2">; </span><span class="s0">i ++) {</span>
+        <span class="s0">diaryFilterList2.add(demo[i])</span><span class="s2">;</span>
+      <span class="s0">}</span>
+    <span class="s0">}</span>
+
+    <span class="s0">diaryFilterList2 = List.from(diaryFilterList2.reversed)</span><span class="s2">;</span>
+
+  <span class="s0">}</span>
+
+  <span class="s0">getFilter() {</span>
+    <span class="s2">return </span><span class="s0">filterList</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">getFilter2() {</span>
+    <span class="s2">return </span><span class="s0">filterList2</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">getFilterData() {</span>
+    <span class="s2">return </span><span class="s0">diaryFilterList</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">getFilterData2() {</span>
+    <span class="s2">return </span><span class="s0">diaryFilterList2</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">getAllProfit() {</span>
+    <span class="s2">return </span><span class="s0">allProfit</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+
+
+  <span class="s3">//--- 분석 부분</span>
+
+  <span class="s0">analDataSave() async {</span>
+    <span class="s2">final </span><span class="s0">file = await _localFile2</span><span class="s2">;</span>
+    <span class="s0">file.writeAsString(analData[</span><span class="s4">2</span><span class="s0">].toString())</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+
+
+  <span class="s0">analCal() {</span>
+    <span class="s0">analData[</span><span class="s4">0</span><span class="s0">] = diaryFilterList.length.toString()</span><span class="s2">;</span>
+
+    <span class="s2">var </span><span class="s0">win = </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt; diaryFilterList.length </span><span class="s2">; </span><span class="s0">i++) {</span>
+      <span class="s2">if</span><span class="s0">(diaryFilterList[i][</span><span class="s4">5</span><span class="s0">] &gt;= </span><span class="s4">0</span><span class="s0">) {</span>
+        <span class="s0">win++</span><span class="s2">;</span>
+      <span class="s0">}</span>
+    <span class="s0">}</span>
+    <span class="s2">var </span><span class="s0">rate = win / diaryFilterList.length * </span><span class="s4">100</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">rate2 = rate.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(rate2.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">rate2 = rate2.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData[</span><span class="s4">1</span><span class="s0">] = rate2</span><span class="s2">;</span>
+
+    <span class="s2">var </span><span class="s0">money = </span><span class="s4">0.0</span><span class="s2">;</span>
+    <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt; diaryFilterList.length </span><span class="s2">; </span><span class="s0">i ++) {</span>
+      <span class="s0">money += diaryFilterList[i][</span><span class="s4">5</span><span class="s0">]</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData[</span><span class="s4">3</span><span class="s0">] = money.toString()</span><span class="s2">;</span>
+
+    <span class="s2">var </span><span class="s0">prate = double.parse(analData[</span><span class="s4">3</span><span class="s0">]) / double.parse(analData[</span><span class="s4">2</span><span class="s0">]) * </span><span class="s4">100</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">prate3 = prate.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(prate3.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">prate3 = prate3.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData[</span><span class="s4">4</span><span class="s0">] = prate3</span><span class="s2">;</span>
+
+  <span class="s0">}</span>
+
+  <span class="s3">// analCal2(data) {</span>
+  <span class="s3">//   analData[0] = data.length.toString();</span>
+  <span class="s3">//</span>
+  <span class="s3">//   var win = 0;</span>
+  <span class="s3">//   for(var i = 0; i &lt; data.length ; i++) {</span>
+  <span class="s3">//     if(data[i][5] &gt;= 0) {</span>
+  <span class="s3">//       win++;</span>
+  <span class="s3">//     }</span>
+  <span class="s3">//   }</span>
+  <span class="s3">//   var rate = win / data.length * 100;</span>
+  <span class="s3">//   var rate2 = rate.toString();</span>
+  <span class="s3">//   if (rate2.length &gt; 6) {</span>
+  <span class="s3">//     rate2 = rate2.substring(0,5);</span>
+  <span class="s3">//   }</span>
+  <span class="s3">//   analData[1] = rate2;</span>
+  <span class="s3">//</span>
+  <span class="s3">//   var money = 0.0;</span>
+  <span class="s3">//   for(var i = 0; i &lt; data.length ; i ++) {</span>
+  <span class="s3">//     money += data[i][5];</span>
+  <span class="s3">//   }</span>
+  <span class="s3">//   analData[3] = money.toString();</span>
+  <span class="s3">//</span>
+  <span class="s3">//   var prate = double.parse(analData[3]) / double.parse(analData[2]) * 100;</span>
+  <span class="s3">//   var prate3 = prate.toString();</span>
+  <span class="s3">//   if (prate3.length &gt; 6) {</span>
+  <span class="s3">//     prate3 = prate3.substring(0,5);</span>
+  <span class="s3">//   }</span>
+  <span class="s3">//   analData[4] = prate3;</span>
+  <span class="s3">//</span>
+  <span class="s3">// }</span>
+
+
+  <span class="s0">calAllProfit() {</span>
+    <span class="s0">allProfit.clear()</span><span class="s2">;</span>
+    <span class="s0">double adds = </span><span class="s4">0.0</span><span class="s2">;</span>
+
+
+    <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i&lt; diaryFilterList2.length</span><span class="s2">; </span><span class="s0">i++) {</span>
+      <span class="s0">adds += diaryFilterList2[i][</span><span class="s4">5</span><span class="s0">]</span><span class="s2">;</span>
+      <span class="s0">allProfit.add(adds)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+
+
+  <span class="s0">}</span>
+
+  <span class="s0">analCal2() {</span>
+    <span class="s0">analData2.clear()</span><span class="s2">;</span>
+    <span class="s0">analData2.add(diaryFilterList2.length.toString())</span><span class="s2">; </span><span class="s3">//0</span>
+
+    <span class="s3">// 승패</span>
+    <span class="s2">var </span><span class="s0">win = </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">lose = </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt; diaryFilterList2.length </span><span class="s2">; </span><span class="s0">i++) {</span>
+      <span class="s2">if</span><span class="s0">(diaryFilterList2[i][</span><span class="s4">5</span><span class="s0">] &gt;= </span><span class="s4">0</span><span class="s0">) {</span>
+        <span class="s0">win++</span><span class="s2">;</span>
+      <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+        <span class="s0">lose++</span><span class="s2">;</span>
+      <span class="s0">}</span>
+    <span class="s0">}</span>
+    <span class="s2">var </span><span class="s0">rate = win / diaryFilterList2.length * </span><span class="s4">100</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">rate2 = rate.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(rate2.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">rate2 = rate2.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(rate2)</span><span class="s2">; </span><span class="s3">//1</span>
+
+    <span class="s0">analData2.add(analData[</span><span class="s4">2</span><span class="s0">])</span><span class="s2">; </span><span class="s3">//2</span>
+
+
+
+    <span class="s2">var </span><span class="s0">money = </span><span class="s4">0.0</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">maxMoney = </span><span class="s4">0.0</span><span class="s2">;</span>
+    <span class="s3">// 최대손실폭 mdd</span>
+    <span class="s2">var </span><span class="s0">mddList = []</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">mddList2 = []</span><span class="s2">;</span>
+
+    <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt; diaryFilterList2.length </span><span class="s2">; </span><span class="s0">i ++) {</span>
+      <span class="s2">var </span><span class="s0">fmoney = money</span><span class="s2">;</span>
+
+      <span class="s0">money += diaryFilterList2[i][</span><span class="s4">5</span><span class="s0">]</span><span class="s2">;</span>
+
+
+      <span class="s2">if </span><span class="s0">(fmoney &lt; money &amp;&amp; maxMoney &lt; money) {</span>
+        <span class="s0">maxMoney = money</span><span class="s2">;</span>
+      <span class="s0">}</span>
+      <span class="s2">if </span><span class="s0">(maxMoney &gt; money) {</span>
+        <span class="s0">mddList.add(money - maxMoney)</span><span class="s2">;</span>
+        <span class="s0">mddList2.add((money - maxMoney) / maxMoney * </span><span class="s4">100</span><span class="s0">)</span><span class="s2">;</span>
+      <span class="s0">}</span>
+
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(money.toString())</span><span class="s2">; </span><span class="s3">//3</span>
+
+
+
+    <span class="s2">var </span><span class="s0">prate = double.parse(analData2[</span><span class="s4">3</span><span class="s0">]) / double.parse(analData2[</span><span class="s4">2</span><span class="s0">]) * </span><span class="s4">100</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">prate3 = prate.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(prate3.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">prate3 = prate3.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(prate3)</span><span class="s2">; </span><span class="s3">//4</span>
+    
+
+
+
+    <span class="s3">// 상세분석</span>
+
+    <span class="s3">// 총이익,총손해</span>
+    <span class="s2">var </span><span class="s0">profit = </span><span class="s4">0.0</span><span class="s2">, </span><span class="s0">loss = </span><span class="s4">0.0</span><span class="s2">;</span>
+
+    <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt; diaryFilterList2.length </span><span class="s2">; </span><span class="s0">i ++) {</span>
+
+      <span class="s3">// 이익 손실 나누기</span>
+      <span class="s2">if </span><span class="s0">(</span><span class="s4">0.0 </span><span class="s0">&lt; diaryFilterList2[i][</span><span class="s4">5</span><span class="s0">]) {</span>
+        <span class="s0">profit += diaryFilterList2[i][</span><span class="s4">5</span><span class="s0">]</span><span class="s2">;</span>
+      <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+        <span class="s0">loss += diaryFilterList2[i][</span><span class="s4">5</span><span class="s0">]</span><span class="s2">;</span>
+      <span class="s0">}</span>
+
+
+
+    <span class="s0">}</span>
+
+    <span class="s0">analData2.add(profit)</span><span class="s2">;</span><span class="s3">//5 //총이익</span>
+    <span class="s2">var </span><span class="s0">prorate = analData2[</span><span class="s4">5</span><span class="s0">] / double.parse(analData2[</span><span class="s4">2</span><span class="s0">]) * </span><span class="s4">100</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">prorate3 = prorate.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(prorate3.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">prorate3 = prorate3.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(prorate3)</span><span class="s2">;</span><span class="s3">//6 이익퍼센트</span>
+
+    <span class="s0">analData2.add(loss)</span><span class="s2">;</span><span class="s3">//7 총손실</span>
+    <span class="s2">var </span><span class="s0">lossRate = analData2[</span><span class="s4">7</span><span class="s0">] / double.parse(analData2[</span><span class="s4">2</span><span class="s0">]) * </span><span class="s4">100</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">lossRate3 = lossRate.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(lossRate3.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">lossRate3 = lossRate3.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(lossRate3)</span><span class="s2">;</span><span class="s3">//8 손실퍼센트</span>
+
+    <span class="s3">//수익팩터</span>
+    <span class="s2">var </span><span class="s0">profitFector = analData2[</span><span class="s4">5</span><span class="s0">] / -analData2[</span><span class="s4">7</span><span class="s0">]</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">profitFector2 = profitFector.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(profitFector2.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">profitFector2 = profitFector2.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(profitFector2)</span><span class="s2">; </span><span class="s3">//9 수익팩터</span>
+
+
+    <span class="s3">// 최대손실폭 mdd 이어서 계산</span>
+    <span class="s2">var </span><span class="s0">min</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">min2</span><span class="s2">;</span>
+    <span class="s2">try </span><span class="s0">{</span>
+      <span class="s0">min = mddList.reduce((current</span><span class="s2">, </span><span class="s0">next) =&gt; current &lt; next ? current : next)</span><span class="s2">;</span>
+      <span class="s0">min2 = mddList2.reduce((current</span><span class="s2">, </span><span class="s0">next) =&gt; current &lt; next ? current : next)</span><span class="s2">;</span>
+    <span class="s0">} </span><span class="s2">catch </span><span class="s0">(E) {</span>
+      <span class="s0">min = </span><span class="s4">0.0</span><span class="s2">;</span>
+      <span class="s0">min2 = </span><span class="s4">0.0</span><span class="s2">;</span>
+    <span class="s0">}</span>
+
+    <span class="s0">analData2.add(min)</span><span class="s2">;</span><span class="s3">//10 mdd 값</span>
+
+    <span class="s2">var </span><span class="s0">mddRate = min2.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(mddRate.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">mddRate = mddRate.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">6</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(mddRate)</span><span class="s2">;</span><span class="s3">//11 mdd 퍼센트 값</span>
+    
+
+    <span class="s3">// 승패 추가</span>
+    <span class="s0">analData2.add(win)</span><span class="s2">; </span><span class="s3">//12</span>
+    <span class="s0">analData2.add(lose)</span><span class="s2">;  </span><span class="s3">//13</span>
+
+
+    <span class="s3">// 평균거래 추가</span>
+    <span class="s2">var </span><span class="s0">avg = (double.parse(analData2[</span><span class="s4">3</span><span class="s0">]) / double.parse(analData2[</span><span class="s4">0</span><span class="s0">])).toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(avg.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">avg = avg.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">6</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(avg)</span><span class="s2">; </span><span class="s3">//14</span>
+
+    <span class="s2">var </span><span class="s0">avgRate = double.parse(avg) / double.parse(analData2[</span><span class="s4">2</span><span class="s0">]) * </span><span class="s4">100</span><span class="s2">;</span>
+    <span class="s2">var </span><span class="s0">avgRate2 = avgRate.toString()</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(avgRate2.length &gt; </span><span class="s4">6</span><span class="s0">) {</span>
+      <span class="s0">avgRate2 = avgRate2.substring(</span><span class="s4">0</span><span class="s2">,</span><span class="s4">5</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">analData2.add(avgRate2)</span><span class="s2">; </span><span class="s3">//15</span>
+
+    
+  <span class="s0">}</span>
+
+
+
+
+  <span class="s0">csvSave(fname) {</span>
+    <span class="s0">List&lt;List&lt;dynamic&gt;&gt; csvList = [[</span><span class="s1">&quot;날짜&quot;</span><span class="s2">, </span><span class="s1">&quot;종목&quot;</span><span class="s2">, </span><span class="s1">&quot;투자금액&quot;</span><span class="s2">, </span><span class="s1">&quot;최종금액&quot;</span><span class="s2">, </span><span class="s1">&quot;수익&quot;</span><span class="s2">, </span><span class="s1">&quot;수익률&quot;</span><span class="s2">, </span><span class="s1">&quot;메모&quot;</span><span class="s0">]]</span><span class="s2">;</span>
+
+    <span class="s2">for</span><span class="s0">(</span><span class="s2">var </span><span class="s0">i = </span><span class="s4">0</span><span class="s2">; </span><span class="s0">i &lt; diaryList.length</span><span class="s2">; </span><span class="s0">i++) {</span>
+      <span class="s0">List line = []</span><span class="s2">;</span>
+      <span class="s0">line.add(diaryList[i][</span><span class="s4">0</span><span class="s0">])</span><span class="s2">;</span>
+      <span class="s0">line.add(diaryList[i][</span><span class="s4">1</span><span class="s0">])</span><span class="s2">;</span>
+      <span class="s0">line.add(diaryList[i][</span><span class="s4">2</span><span class="s0">])</span><span class="s2">;</span>
+      <span class="s0">line.add(diaryList[i][</span><span class="s4">3</span><span class="s0">])</span><span class="s2">;</span>
+      <span class="s0">line.add(diaryList[i][</span><span class="s4">5</span><span class="s0">])</span><span class="s2">;</span>
+      <span class="s0">line.add(diaryList[i][</span><span class="s4">6</span><span class="s0">])</span><span class="s2">;</span>
+      <span class="s0">line.add(diaryList[i][</span><span class="s4">4</span><span class="s0">])</span><span class="s2">;</span>
+
+      <span class="s0">csvList.add(line)</span><span class="s2">;</span>
+    <span class="s0">}</span>
+
+    <span class="s0">String csv = </span><span class="s2">const </span><span class="s0">ListToCsvConverter().convert(csvList)</span><span class="s2">;</span>
+
+    <span class="s0">FileStorage.writeCounter(</span>
+        <span class="s0">csv</span><span class="s2">, </span><span class="s0">fname)</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+<span class="s0">}</span>
+
+
+
+
+
+
+
+
+<span class="s3">// To save the file in the device</span>
+<span class="s2">class </span><span class="s0">FileStorage {</span>
+  <span class="s0">static Future&lt;String&gt; getExternalDocumentPath() async {</span>
+    <span class="s3">// To check whether permission is given for this app or not.</span>
+    <span class="s2">var </span><span class="s0">status = await Permission.storage.status</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(!status.isGranted) {</span>
+      <span class="s3">// If not we will ask for permission first</span>
+      <span class="s0">await Permission.storage.request()</span><span class="s2">;</span>
+    <span class="s0">}</span>
+    <span class="s0">Directory _directory = Directory(</span><span class="s1">&quot;&quot;</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s2">if </span><span class="s0">(Platform.isAndroid) {</span>
+      <span class="s3">// Redirects it to download folder in android</span>
+      <span class="s0">_directory = Directory(</span><span class="s1">&quot;/storage/emulated/0/Download&quot;</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">} </span><span class="s2">else </span><span class="s0">{</span>
+      <span class="s0">_directory = await getApplicationDocumentsDirectory()</span><span class="s2">;</span>
+    <span class="s0">}</span>
+
+    <span class="s2">final </span><span class="s0">exPath = _directory.path</span><span class="s2">;</span>
+    <span class="s0">print(</span><span class="s1">&quot;Saved Path: </span><span class="s0">$exPath</span><span class="s1">&quot;</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s0">await Directory(exPath).create(recursive: </span><span class="s2">true</span><span class="s0">)</span><span class="s2">;</span>
+    <span class="s2">return </span><span class="s0">exPath</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">static Future&lt;String&gt; get _localPath async {</span>
+    <span class="s3">// final directory = await getApplicationDocumentsDirectory();</span>
+    <span class="s3">// return directory.path;</span>
+    <span class="s3">// To get the external path from device of download folder</span>
+    <span class="s2">final </span><span class="s0">String directory = await getExternalDocumentPath()</span><span class="s2">;</span>
+    <span class="s2">return </span><span class="s0">directory</span><span class="s2">;</span>
+  <span class="s0">}</span>
+
+  <span class="s0">static Future&lt;File&gt; writeCounter(String bytes</span><span class="s2">,</span><span class="s0">String name) async {</span>
+    <span class="s2">final </span><span class="s0">path = await _localPath</span><span class="s2">;</span>
+    <span class="s3">// Create a file for the path of</span>
+    <span class="s3">// device and file name with extension</span>
+    <span class="s0">File file= File(</span><span class="s1">'</span><span class="s0">$path</span><span class="s1">/</span><span class="s0">$name</span><span class="s1">'</span><span class="s0">)</span><span class="s2">;;</span>
+    <span class="s0">print(</span><span class="s1">&quot;Save file&quot;</span><span class="s0">)</span><span class="s2">;</span>
+
+    <span class="s3">// Write the data in the file you have created</span>
+    <span class="s2">return </span><span class="s0">file.writeAsString(bytes)</span><span class="s2">;</span>
+  <span class="s0">}</span>
+<span class="s0">}</span>
+</pre>
+</body>
+</html>
