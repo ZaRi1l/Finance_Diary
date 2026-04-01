@@ -10,7 +10,9 @@
 
 <br>
 
+<img src="docs/홍보용 사진/플레이스토어.jpg" width="800"/> 
 **Google Play 다운로드: [바로가기 (500+ Downloads)](https://play.google.com/store/apps/details?id=com.trade.trading_diary&hl=ko-KR)**
+
 
 <br>
 
